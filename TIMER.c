@@ -7,11 +7,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){}
 //以下是单通道基本定时器的初始化函数
 static void MX_TIM10_Init(void)
 {
-  htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 16799;
-  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 9999;
-  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim10.Instance = TIM10;//定时器序号
+  htim10.Init.Prescaler = 16799;//分频系数
+  htim10.Init.CounterMode = TIM_COUNTERMODE_UP;//计数模式
+  htim10.Init.Period = 9999;//计数周期
+  //以下不知道干嘛的，为默认设置
+  htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1; 
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
   {
