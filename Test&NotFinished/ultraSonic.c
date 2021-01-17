@@ -48,9 +48,12 @@
 /* USER CODE BEGIN PV */
 short captureFlag = 0;
 short finishFlag=0;
+short triggerflag=1;
+short setFlag=0;
 int capVal1=0;
 int capVal2=0;
 int diff=0;
+
 
 /* USER CODE END PV */
 
@@ -63,7 +66,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void GetDistance();
-void triggerUltraSonic();
 /* USER CODE END 0 */
 
 /**
@@ -95,11 +97,13 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM2_Init();
+  MX_TIM10_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 	printf("DistanceTest\r\n");
-	__HAL_TIM_CLEAR_IT(&htim2,TIM_IT_UPDATE);
 	HAL_TIM_IC_Start_IT(&htim2,TIM_CHANNEL_1);
+	__HAL_TIM_CLEAR_IT(&htim10,TIM_IT_UPDATE);
+	HAL_TIM_Base_Start_IT(&htim10);
 
   /* USER CODE END 2 */
 
@@ -107,12 +111,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		triggerUltraSonic();
-		if(finishFlag==1) GetDistance();
-		
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+		if(finishFlag==1) GetDistance();
   }
   /* USER CODE END 3 */
 }
@@ -132,12 +134,11 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 4;
   RCC_OscInitStruct.PLL.PLLN = 168;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
@@ -161,30 +162,44 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void triggerUltraSonic(){
-	HAL_GPIO_WritePin(Trigger_GPIO_Port,Trigger_Pin,GPIO_PIN_RESET);
-	HAL_Delay(1);
-	HAL_GPIO_WritePin(Trigger_GPIO_Port,Trigger_Pin,GPIO_PIN_SET);
-}
+
 void GetDistance(){
 	int distance;
 	int period;
-	
+	if(finishFlag==1){
 	if(capVal1<capVal2) diff=capVal2-capVal1;
 	else diff = (0xFFFFFFFF+1-capVal1)+capVal2;
 	
 	period=diff/10000;//diff:10000 times per seconds.
 	distance=(period*340)/2;
-	printf("The distance is %d m.",distance);
+	printf("The distance is %d m.\r\n",distance);
 	HAL_Delay(1000);
 	finishFlag=0;
 	HAL_TIM_IC_Start_IT(&htim2,TIM_CHANNEL_1);
+	HAL_TIM_Base_Start_IT(&htim10);
+	}
+	triggerflag=1;
 }
 
-void HAL_TIM_IC_Callback(TIM_HandleTypeDef *htim){
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance==TIM10){
+	if(triggerflag==1){ 
+		printf("Start trigger");
+		HAL_GPIO_WritePin(trigger_GPIO_Port,trigger_Pin,GPIO_PIN_SET);
+		triggerflag = 0;
+	}
+	else{
+  		printf("Stop trigger");
+		 HAL_TIM_Base_Stop_IT(&htim10);
+	   HAL_GPIO_WritePin(trigger_GPIO_Port,trigger_Pin,GPIO_PIN_RESET);}
+  }
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance==TIM2){
 		if(htim->Channel==HAL_TIM_ACTIVE_CHANNEL_1){
 			if(captureFlag==0){
+				printf("GetStartTimerValue");
 				captureFlag=1;
 				capVal1=HAL_TIM_ReadCapturedValue(&htim2,TIM_CHANNEL_1);
 			}
@@ -192,9 +207,11 @@ void HAL_TIM_IC_Callback(TIM_HandleTypeDef *htim){
 				captureFlag=0;
 				finishFlag=1;
 				capVal2=HAL_TIM_ReadCapturedValue(&htim2,TIM_CHANNEL_1);
+				printf("GetStopTimerValue");
 				HAL_TIM_IC_Stop_IT(&htim2,TIM_CHANNEL_1);
 			}
-			else Error_Handler();
+			else { printf("Error");
+			Error_Handler();}
 		}
 	}
 }
@@ -236,3 +253,4 @@ void assert_failed(uint8_t *file, uint32_t line)
 #endif /* USE_FULL_ASSERT */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
