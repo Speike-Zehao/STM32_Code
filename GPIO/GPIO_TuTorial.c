@@ -7,4 +7,6 @@
     GPIO_Initure.Pull=GPIO_PULLUP;          //上拉
     GPIO_Initure.Speed=GPIO_SPEED_HIGH;   //GPIO运行模式：高速
     HAL_GPIO_Init(GPIOB,&GPIO_Initure);  
+	   
+    GPIO_Initure.Alternate=GPIO_AF1_TIM2;   //GPIO复用模式：配置为定时器2的通道1
     }
