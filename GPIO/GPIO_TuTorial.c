@@ -10,3 +10,22 @@
 	   
     GPIO_Initure.Alternate=GPIO_AF1_TIM2;   //GPIO复用模式：配置为定时器2的通道1
     }
+
+   void Reset(){
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_5;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(led_GPIO_Port, &GPIO_InitStruct);
+	
+    HAL_GPIO_WritePin(GPIOA,GPIO_PIN_5,GPIO_PIN_RESET);	
+    HAL_Delay(5);
+    __HAL_TIM_CLEAR_FLAG(&htim2,TIM_FLAG_CC1|TIM_FLAG_UPDATE);  
+    __HAL_TIM_SET_COUNTER(&htim2,0);
+	
+    GPIO_InitStruct.Mode=GPIO_MODE_AF_PP;    
+    GPIO_InitStruct.Pull=GPIO_NOPULL;         
+    GPIO_InitStruct.Alternate=GPIO_AF1_TIM2;   
+    HAL_GPIO_Init(GPIOA,&GPIO_InitStruct);
+    }//复用F429IGTx的PA5用作电容的放电接口和TIM2的channel1。有多余的IO口就不要复用。
