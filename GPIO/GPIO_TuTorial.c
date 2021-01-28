@@ -11,6 +11,17 @@
     GPIO_Initure.Alternate=GPIO_AF1_TIM2;   //GPIO复用模式：配置为定时器2的通道1
     }
 
+    void GPIO_INIT(){
+    GPIO_InitTypeDef GPIO_Initure;
+    GPIO_Initure.Pin=GPIO_PIN_1; //PB1
+    GPIO_Initure.Mode=GPIO_MODE_AF_PP; //复用推挽输出
+    GPIO_Initure.Pull=GPIO_PULLUP; //上拉
+    GPIO_Initure.Speed=GPIO_SPEED_HIGH; //高速
+    GPIO_Initure.Alternate= GPIO_AF2_TIM3; //PB1 复用为 TIM3_CH4
+    HAL_GPIO_Init(GPIOB,&GPIO_Initure);
+    }
+
+
    void Reset(){
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     GPIO_InitStruct.Pin = GPIO_PIN_5;
