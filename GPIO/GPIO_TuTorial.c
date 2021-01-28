@@ -17,7 +17,8 @@
     GPIO_Initure.Mode=GPIO_MODE_AF_PP; //复用推挽输出
     GPIO_Initure.Pull=GPIO_PULLUP; //上拉
     GPIO_Initure.Speed=GPIO_SPEED_HIGH; //高速
-    GPIO_Initure.Alternate= GPIO_AF2_TIM3; //PB1 复用为 TIM3_CH4
+    GPIO_Initure.Alternate= GPIO_AF2_TIM3; //PB1 复用为 TIM3_CH4 
+	    //注意，Alternate Function 即AFx，x值对应的映射外设在参考手册的GPIO复用部分、芯片手册的引脚定义和映射部分给出。
     HAL_GPIO_Init(GPIOB,&GPIO_Initure);
     }
 
