@@ -1,3 +1,5 @@
+//180°舵机
+//控制舵机的方波周期为20ms，频率50Hz，高电平持续时间0.5ms（0°）-2.5ms（180°）			
 
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
