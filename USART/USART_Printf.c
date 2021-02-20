@@ -15,7 +15,7 @@ Clion 重定向流和keil不同
 void __io_putchar(uint8_t ch)
 {
     HAL_UART_Transmit(&huart1,(uint8_t *)&ch,1,0xFFFF);
-    //return (ch);
+   
 }
 
 
