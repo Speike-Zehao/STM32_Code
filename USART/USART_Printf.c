@@ -1,5 +1,6 @@
 #include "stdio.h"
 
+KEIL5
 /* USER CODE BEGIN 4 */
 int fputc(int ch,FILE *f)
 {
@@ -10,6 +11,12 @@ int fputc(int ch,FILE *f)
 ///Editing all of above to enable your USART put messages to computer.
 ///(Here is usart1,STM32CubeMX give its structure name of 'huart1')
 
+Clion 重定向流和keil不同
+void __io_putchar(uint8_t ch)
+{
+    HAL_UART_Transmit(&huart1,(uint8_t *)&ch,1,0xFFFF);
+    //return (ch);
+}
 
 
 //串口初始化
