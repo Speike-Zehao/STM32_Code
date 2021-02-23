@@ -1,1 +1,3 @@
-
+Use for RGB lights WS2812D.
+Driver is called WS2812D.c and its header file.
+In RGB.c, I only add a basic BREATHLED function,maybe I'll update more function to it later.
