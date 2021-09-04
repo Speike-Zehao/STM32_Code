@@ -1,7 +1,0 @@
-This project aims to make a low-power consumption clock for UESTC1008-Microelectronic System.
-
-Only a little Software functions are expected to be added, and I'll focus on hardware(Circuits) design. 
-
-1.Clock & alarm sys by DS1302;
-2.RGB light effect base on WS2812b chip, 5050 size;
-3.low power consumption mode (sleep mode) provided by STM32L4 Series.
